@@ -1,0 +1,149 @@
+* {
+    /* font-size: 14px; */
+}
+
+.post__row {
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.post__container {
+    margin: auto;
+    margin-top: 14px;
+    width: 470px;
+    border-radius: 12px;
+    border: 1px solid rgb(200, 200, 200);
+    background-color: white;
+}
+
+.post__header {
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 12px;
+}
+
+.post__media {
+    /* padding: 0; */
+}
+
+.caption {
+    margin: 1px;
+}
+
+.post__media img {
+    min-height: 470px;
+    max-height: 538px;
+    width: 470px;
+    object-fit: contain;
+    margin: 0px;
+    padding: 0px;
+    border-top: 0.5px solid rgb(200, 200, 200);
+    border-bottom: 0.5px solid rgb(200, 200, 200);
+}
+.user .user__ava {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+}
+
+/* 
+.user__name {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+    margin-right: 4px;
+} */
+
+.action__icon {
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.post__below-container {
+    padding: 0px 12px;
+}
+
+.interaction-row {
+    margin: 8px 0px 4px 0px;
+    justify-content: space-between;
+}
+
+.interaction-group .action__icon {
+    margin-right: 10px;
+}
+
+.post__row,
+.content {
+    font-size: 14px;
+}
+
+.post__row span {
+    font-weight: 600;
+    margin: 0 1px;
+    cursor: pointer;
+}
+.post__user-caption {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.like-details {
+    margin-left: 4px;
+}
+.post__comment {
+    justify-content: space-between;
+}
+
+.post__comment .like-cmt {
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.btn-trans {
+    background-color: transparent;
+    color: #888;
+    outline: none;
+    border: none;
+    padding: 0px;
+    margin: 12px 0px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.time-tag {
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.post__footer {
+    border-top: 0.5px solid rgb(200, 200, 200);
+    justify-content: space-between;
+    height: 49px;
+    padding: 0 12px;
+}
+
+.post__footer input {
+    padding: 4px 8px;
+    flex: 1;
+    margin: 0 8px;
+    outline: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(54, 54, 54);
+}
+
+.post__footer button {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-weight: 600;
+    color: #0095f6;
+    /* color: #0095f6; */
+}
+
+.like-cmt {
+    padding-right: 4px;
+}

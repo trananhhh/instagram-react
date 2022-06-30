@@ -1,38 +1,100 @@
+body {
+    background-color: #fafafa;
+}
+
 .App {
-  text-align: center;
+    overflow-x: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.btn {
+    font-weight: 600;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-primary {
+    background-color: #0095f6;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    opacity: 0.8;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.secondary-text {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    color: #666;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.modal-text strong {
+    cursor: pointer;
+}
+.modal-text {
+    margin: 16px 24px 0px 24px;
+    text-align: center;
+    user-select: none;
 }
 
-.App-link {
-  color: #61dafb;
+.MuiModal-root input {
+    /* outline: none;
+    border: none; */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.post__list {
+    margin-left: 14px;
+}
+
+.user__ava {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+}
+
+.user__name {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0;
+    margin-right: 4px;
+}
+
+.upload-container {
+    display: flex;
+}
+
+.upload__img img {
+    max-width: 600px;
+    max-height: 600px;
+}
+.upload__img {
+    background-color: #efefef;
+    display: flex;
+    align-items: center;
+    width: 600px;
+    height: 600px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-right: 48px;
+    object-fit: cover;
+}
+
+.upload__progress-bar {
+    height: 8px !important;
+    margin-bottom: 16px;
+    border-radius: 50px;
+}
+
+.upload__caption-submit textarea {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+        sans-serif;
+}
+
+button:disabled {
+    opacity: 40%;
+    cursor: default;
 }
