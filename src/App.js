@@ -124,6 +124,7 @@ function App() {
                 post: doc.data(),
             }))
         );
+        // console.log(snapshot);
     };
 
     const handleSignUpOnClick = (openStatus) => {
@@ -259,15 +260,19 @@ function App() {
             />
             {/* Post list */}
             <div className="post__list">
-                {posts.map(({ id, post }) => (
-                    <PostItem
-                        key={id}
-                        postId={id}
-                        data={post}
-                        username={username}
-                        commentOnClick={handleComment}
-                    />
-                ))}
+                {posts
+                    .sort((post1, post2) => {
+                        return post2.post.dateCreated - post1.post.dateCreated;
+                    })
+                    .map(({ id, post }) => (
+                        <PostItem
+                            key={id}
+                            postId={id}
+                            data={post}
+                            username={username}
+                            commentOnClick={handleComment}
+                        />
+                    ))}
             </div>
             {/* Sign-up modal */}
             <Modal
