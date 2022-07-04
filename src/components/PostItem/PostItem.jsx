@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarGroup } from '@mui/material';
+import 'animate.css';
+
 import './PostItem.css';
 import { db } from '../../firebaseConfig';
 import moment from 'moment';
@@ -7,60 +9,107 @@ import {
     collection,
     getDocs,
     addDoc,
+    deleteDoc,
     doc,
-    query,
-    orderBy,
 } from 'firebase/firestore';
 
 const PostItem = (props) => {
     const postData = props.data;
 
     const [commentList, setCommentList] = useState([]);
+
     const [comment, setComment] = useState('');
+    const [likeList, setLikeList] = useState([]);
+    const [likeStatus, setLikeStatus] = useState(false);
+    const [saveStatus, setSaveStatus] = useState(false);
     const [cmtRenderList, setCmtRenderList] = useState([]);
     const [viewAllCmts, setViewAllCmts] = useState(false);
+    const [heartAnimation, setHeartAnimation] = useState(false);
     const cmtRef = useRef(null);
 
     const getComments = async (postId) => {
-        const cmtCol = collection(db, 'Posts/' + postId, 'comments');
+        const cmtCol = collection(db, `Posts/${postId}/comments`);
         const snapshot = await getDocs(cmtCol);
         setCommentList(
             snapshot.docs.map((doc) => ({
                 id: doc.id,
-                cmt: doc.data(),
+                data: doc.data(),
             }))
         );
     };
 
+    const getLikes = async (postId) => {
+        const likeCol = collection(db, `Posts/${postId}/likes`);
+        const snapshot = await getDocs(likeCol);
+        let tmpList;
+        setLikeList(
+            (tmpList = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+            })))
+        );
+        if (
+            tmpList.filter((e) => e.data.userName === props.username).length > 0
+        )
+            setLikeStatus(true);
+    };
+
     useEffect(() => {
         getComments(props.postId);
+        getLikes(props.postId);
     }, [props.postId]);
 
     const handleCommentPost = () => {
+        if (comment === '' || comment === undefined) return;
         try {
-            const docRef = addDoc(
-                collection(db, 'Posts/' + props.postId, 'comments'),
-                {
-                    content: comment,
-                    userName: props.username,
-                    dateCreated: new Date(),
-                }
-            );
-            console.log('Document written with ID: ', docRef.id);
+            addDoc(collection(db, `Posts/${props.postId}/comments`), {
+                content: comment,
+                userName: props.username,
+                dateCreated: new Date(),
+            }).then(() => {
+                getComments(props.postId);
+                setComment('');
+                setViewAllCmts(false);
+                props.commentOnClick(true);
+            });
+            // console.log('Document written with ID: ', docRef.id);
         } catch (e) {
             console.error('Error adding document: ', e);
         }
-        getComments(props.postId);
-        setComment('');
-        setViewAllCmts(false);
-        props.commentOnClick(true);
     };
+
+    const handleSavePost = () => {
+        setSaveStatus((s) => !s);
+    };
+
+    const handleLikePost = () => {
+        setLikeStatus((s) => !s);
+        try {
+            if (!likeStatus)
+                addDoc(collection(db, `Posts/${props.postId}/likes`), {
+                    userName: props.username,
+                    dateCreated: new Date(),
+                });
+            else {
+                const likeRef = likeList.find(
+                    (e) => e.data.userName == props.username
+                ).id;
+                console.log(likeRef);
+                deleteDoc(doc(db, `Posts/${props.postId}/likes`, likeRef));
+            }
+            // console.log('Document written with ID: ', docRef.id);
+        } catch (e) {
+            console.error('Error adding document: ', e);
+        }
+        getLikes(props.postId);
+    };
+
     useEffect(() => {
         setCmtRenderList(
             commentList.length >= 2
                 ? commentList
                       .sort((cmt1, cmt2) => {
-                          return cmt1.cmt.dateCreated - cmt2.cmt.dateCreated;
+                          return cmt1.data.dateCreated - cmt2.data.dateCreated;
                       })
                       .slice(0, 2)
                 : commentList.slice(0, 2)
@@ -76,6 +125,13 @@ const PostItem = (props) => {
             handleCommentPost();
         }
     };
+
+    useEffect(() => {
+        const func = setTimeout(() => {
+            setHeartAnimation(false);
+        }, 1500);
+        return () => clearTimeout(func);
+    }, [heartAnimation]);
 
     return (
         <div className="post__container">
@@ -94,16 +150,41 @@ const PostItem = (props) => {
                 </div>
             </div>
             {/* Main post */}
-            <div className="post__media">
-                <img alt="#" src={postData.mediaUrl} />
+            <div
+                className="post__media"
+                onDoubleClick={() => {
+                    if (!likeStatus) handleLikePost();
+                    setLikeStatus(true);
+                    setHeartAnimation(true);
+                }}
+            >
+                <img alt="#" className="main-media" src={postData.mediaUrl} />
+                {heartAnimation ? (
+                    <div className="main-heart">
+                        <img
+                            alt=""
+                            className="animate__animated animate__tada"
+                            src={
+                                process.env.PUBLIC_URL +
+                                '/assets/icons/heart.png'
+                            }
+                        />
+                    </div>
+                ) : (
+                    ''
+                )}
             </div>
             {/* Below */}
             <div className="post__below-container">
                 {/* Interaction */}
                 <div className="post__row interaction-row">
                     <div className="post__row interaction-group">
-                        <div className="action__icon">
-                            <i className="bx bx-heart"></i>
+                        <div className="action__icon" onClick={handleLikePost}>
+                            {likeStatus ? (
+                                <i className="bx bxs-heart"></i>
+                            ) : (
+                                <i className="bx bx-heart"></i>
+                            )}
                         </div>
                         <div
                             className="action__icon"
@@ -117,14 +198,33 @@ const PostItem = (props) => {
                     </div>
                     <div className="multiple-dots"></div>
                     <div className="save">
-                        <div className="action__icon">
-                            <i className="bx bx-bookmark"></i>
+                        <div className="action__icon" onClick={handleSavePost}>
+                            {saveStatus ? (
+                                <i className="bx bxs-bookmark"></i>
+                            ) : (
+                                <i className="bx bx-bookmark"></i>
+                            )}
                         </div>
                     </div>
                 </div>
                 {/* Like details */}
                 <div className="post__row">
-                    {/* {if} */}
+                    {likeStatus ? (
+                        likeList.length > 1 ? (
+                            <p className="like-details">
+                                Liked by <span>you</span> and{' '}
+                                <span>{likeList.length - 1} other users</span>
+                            </p>
+                        ) : (
+                            <p className="like-details">
+                                Liked by <span>you</span>
+                            </p>
+                        )
+                    ) : (
+                        <p className="like-details">
+                            Liked by <span>{likeList.length} users</span>
+                        </p>
+                    )}
                     {/* <AvatarGroup max={3}>
                         <Avatar
                             sx={{ width: 20, height: 20 }}
@@ -141,10 +241,7 @@ const PostItem = (props) => {
                             alt="Cindy Baker"
                             src="/static/images/avatar/3.jpg"
                         />
-                    </AvatarGroup>
-                    <p className="like-details">
-                        Liked by <span>trananhhh</span> and <span>others</span>
-                    </p> */}
+                    </AvatarGroup> */}
                 </div>
                 {/* User caption */}
                 <div className="post__user-caption">
@@ -165,6 +262,16 @@ const PostItem = (props) => {
                     >
                         View all {commentList.length} comments
                     </button>
+                ) : commentList.length > 2 && viewAllCmts ? (
+                    <button
+                        className="view-all-cmt btn-trans"
+                        onClick={() => {
+                            setViewAllCmts(false);
+                            setCmtRenderList(commentList.slice(0, 2));
+                        }}
+                    >
+                        Hide {commentList.length - 2} comments
+                    </button>
                 ) : (
                     ''
                 )}
@@ -177,10 +284,10 @@ const PostItem = (props) => {
                             >
                                 <div className="content post__row">
                                     <p className="user__name">
-                                        {comment.cmt.userName}
+                                        {comment.data.userName}
                                     </p>
                                     <p className="caption">
-                                        {comment.cmt.content}
+                                        {comment.data.content}
                                     </p>
                                 </div>
                                 <div className="like-cmt">
@@ -192,9 +299,9 @@ const PostItem = (props) => {
                 ) : (
                     ''
                 )}
-                <button className="time-tag btn-trans">
+                <div className="time-tag btn-trans">
                     {moment(postData.dateCreated.toDate()).fromNow()}
-                </button>
+                </div>
             </div>
             <div className="post__row post__footer">
                 <div className="action__icon">

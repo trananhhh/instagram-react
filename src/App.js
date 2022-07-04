@@ -213,7 +213,7 @@ function App() {
             () => {
                 //handle when complete
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log(downloadURL);
+                    // console.log(downloadURL);
                     try {
                         const docRef = addDoc(collection(db, 'Posts'), {
                             mediaUrl: downloadURL,
@@ -221,7 +221,7 @@ function App() {
                             dateCreated: new Date(),
                             caption: caption,
                         });
-                        console.log('Document written with ID: ', docRef.id);
+                        // console.log('Document written with ID: ', docRef.id);
                     } catch (e) {
                         console.error('Error adding document: ', e);
                     }

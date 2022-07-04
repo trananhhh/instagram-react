@@ -22,30 +22,65 @@
     justify-content: space-between;
     height: 56px;
     padding: 0 12px;
+    margin: 0;
 }
 
 .post__media {
     /* padding: 0; */
+    min-height: 470px;
+    max-height: 538px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-top: 0.5px solid rgb(200, 200, 200);
+    border-bottom: 0.5px solid rgb(200, 200, 200);
 }
 
 .caption {
     margin: 1px;
 }
 
-.post__media img {
-    min-height: 470px;
-    max-height: 538px;
+.post__media .main-media {
     width: 470px;
-    object-fit: contain;
-    margin: 0px;
-    padding: 0px;
-    border-top: 0.5px solid rgb(200, 200, 200);
-    border-bottom: 0.5px solid rgb(200, 200, 200);
 }
 .user .user__ava {
     width: 32px;
     height: 32px;
     margin-right: 8px;
+}
+
+@keyframes heartMain {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.post__media .main-heart {
+    /* object-fit: contain; */
+    z-index: 3;
+    position: absolute;
+    top: calc(50% - 60px) !important;
+    left: calc(50% - 60px) !important;
+    filter: drop-shadow(0px 0px 15px #444);
+    -webkit-filter: drop-shadow(0px 0px 15px #444);
+    animation-name: heartMain;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
+}
+.post__media .main-heart img {
+    width: 120px;
+    height: 120px !important;
 }
 
 /* 
@@ -90,7 +125,8 @@
 }
 
 .like-details {
-    margin-left: 4px;
+    margin-bottom: 8px;
+    /* margin-left: 4px; */
 }
 .post__comment {
     justify-content: space-between;
@@ -114,6 +150,7 @@
 .time-tag {
     font-size: 12px;
     text-transform: uppercase;
+    cursor: default;
 }
 
 .post__footer {
@@ -154,4 +191,35 @@
 
 .post__comment-list {
     margin-top: 12px;
+    /* max-height: 150px;
+    overflow-y: scroll; */
 }
+
+@keyframes heartBtn {
+    0% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+    75% {
+        transform: scale(1.5);
+        opacity: 0.75;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.bxs-heart {
+    animation-name: heartBtn;
+    animation-duration: 0.5s;
+    color: #ed4956;
+}
+
+.bxs-bookmark {
+    animation-name: heartBtn;
+    animation-duration: 0.5s;
+    color: #ff942a;
+}
+
+/* animate__pulse */

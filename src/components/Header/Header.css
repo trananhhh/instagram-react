@@ -34,7 +34,8 @@
 }
 
 .header__profile .user__name {
-    text-align: right;
+    /* text-align: right; */
+    text-align: left;
     /* margin-right: 16px; */
 }
 
@@ -42,6 +43,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    width: calc(50vw - 268px / 2);
 }
 
 .header__logo {
