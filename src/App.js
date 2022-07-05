@@ -13,6 +13,7 @@ import {
 import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { Box, Modal, LinearProgress } from '@mui/material';
+import { useDropzone } from 'react-dropzone';
 
 const modalStyle = {
     position: 'absolute',
@@ -110,6 +111,7 @@ function App() {
     const [caption, setCaption] = useState('');
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState('');
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
     useEffect(() => {
         getData();
@@ -249,6 +251,13 @@ function App() {
         return () => URL.revokeObjectURL(objectUrl);
     }, [image]);
 
+    const files = acceptedFiles.map((file) => (
+        <li key={file.path}>
+            {file.path} - {file.size} bytes
+        </li>
+    ));
+    console.log(files);
+
     return (
         <div className="App">
             <Header
@@ -340,7 +349,6 @@ function App() {
                 </Box>
             </Modal>
             {/* Upload modal */}
-
             <Modal
                 open={openModalUpload}
                 onClose={() => {
@@ -387,12 +395,19 @@ function App() {
                             </div>
                         </div>
                     ) : (
-                        <input
+                        /* <input
                             type="file"
                             placeholder="Drop file here"
                             // onChange={handleUpload}
                             onChange={(e) => setImage(e.target.files[0])}
-                        />
+                        /> */
+                        <div {...getRootProps({ className: 'dropzone' })}>
+                            <input {...getInputProps()} />
+                            <p>
+                                Drag 'n' drop some files here, or click to
+                                select files
+                            </p>
+                        </div>
                     )}
                 </Box>
             </Modal>
