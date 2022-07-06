@@ -2,12 +2,7 @@
     /* font-size: 14px; */
 }
 
-.post__row {
-    display: flex;
-    align-items: center;
-    line-height: 1;
-    margin-bottom: 4px;
-}
+
 
 .post__container {
     margin: auto;
@@ -110,12 +105,12 @@
     margin-right: 10px;
 }
 
-.post__row,
+.row,
 .content {
     font-size: 14px;
 }
 
-.post__row span {
+.row span {
     font-weight: 600;
     margin: 0 1px;
     cursor: pointer;

@@ -1,7 +1,8 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
+import Home from './components/Home';
 import Header from './components/Header';
-import PostItem from './components/PostItem';
+import Profile from './components/Profile';
 import { auth, db, storage } from './firebaseConfig';
 import {
     createUserWithEmailAndPassword,
@@ -14,19 +15,19 @@ import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { Box, Modal, LinearProgress } from '@mui/material';
 import Dropzone from 'react-dropzone';
-// import { Carousel } from 'react-carousel-minimal';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const modalStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 360,
+    width: '460px',
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius: 5,
@@ -54,7 +55,7 @@ const modalStyle = {
         borderRadius: 1,
         p: '10px 8px',
         display: 'block',
-        width: '352px',
+        width: '320px',
         mt: 2,
         outline: 0,
     },
@@ -146,6 +147,7 @@ function App() {
         signOut(auth)
             .then(() => {
                 setUser(null);
+                setUsername('');
             })
             .catch((err) => {
                 console.log(err);
@@ -243,10 +245,8 @@ function App() {
         if (images.length === 0) {
             return;
         }
-        // console.log(images);
         const imagesUrl = images.map((image) => URL.createObjectURL(image));
         setData(imagesUrl);
-        // setData(imagesUrl.reduce((prev, cur) => [...prev, { image: cur }], []));
         return () => imagesUrl.map((e) => URL.revokeObjectURL(e));
     }, [images]);
 
@@ -256,30 +256,31 @@ function App() {
 
     return (
         <div className="App">
-            <Header
-                signUpOnClick={handleSignUpOnClick}
-                logOutOnClick={handleLogOutOnClick}
-                logInOnClick={handleLogInOnClick}
-                uploadOnClick={handleUploadOnClick}
-                user={user}
-            />
-            {/* Post list */}
-            <div className="post__list">
-                {posts
-                    .sort((post1, post2) => {
-                        return post2.post.dateCreated - post1.post.dateCreated;
-                    })
-                    .map(({ id, post }) => (
-                        <PostItem
-                            key={id}
-                            postId={id}
-                            data={post}
-                            username={username}
-                            commentOnClick={handleComment}
-                            handleDeletePost={handleDeletePost}
-                        />
-                    ))}
-            </div>
+            <Router>
+                <Header
+                    signUpOnClick={handleSignUpOnClick}
+                    logOutOnClick={handleLogOutOnClick}
+                    logInOnClick={handleLogInOnClick}
+                    uploadOnClick={handleUploadOnClick}
+                    user={user}
+                />
+
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <Home
+                                posts={posts}
+                                username={username}
+                                handleComment={handleComment}
+                                handleDeletePost={handleDeletePost}
+                            />
+                        }
+                    />
+                    <Route path="/:username" element={<Profile />} />
+                </Routes>
+            </Router>
+
             {/* Sign-up modal */}
             <Modal
                 open={openModalSignUp}

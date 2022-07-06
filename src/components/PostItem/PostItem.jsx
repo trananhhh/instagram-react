@@ -19,7 +19,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Fade from '@mui/material/Fade';
 
 const PostItem = (props) => {
     // console.log(props.postId);
@@ -41,7 +40,6 @@ const PostItem = (props) => {
     useEffect(() => {
         if (postData.caption && postData.caption.length > 100) {
             setShowMoreCapsBtn(true);
-            console.log(postData.caption);
             setRenderCaption(postData.caption.substring(0, 100));
         } else {
             setShowMoreCapsBtn(false);
@@ -162,7 +160,7 @@ const PostItem = (props) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const handleClick = (event) => {
+    const handleOpenOptions = (event) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
@@ -181,8 +179,8 @@ const PostItem = (props) => {
     return (
         <div className="post__container">
             {/* Header */}
-            <div className="post__header post__row">
-                <div className="user post__row">
+            <div className="post__header row">
+                <div className="user row">
                     <Avatar
                         className="user__ava"
                         alt={postData.userName}
@@ -193,7 +191,7 @@ const PostItem = (props) => {
                 <div className="post__header-options action__icon">
                     <i
                         className="bx bx-dots-horizontal-rounded"
-                        onClick={handleClick}
+                        onClick={handleOpenOptions}
                     ></i>
                     <Menu
                         id="fade-menu"
@@ -205,7 +203,7 @@ const PostItem = (props) => {
                         onClose={handleClose}
                         // TransitionComponent={Fade}
                     >
-                        {postData.userName == props.username ? (
+                        {postData.userName === props.username ? (
                             <MenuItem
                                 onClick={handleDeletePost}
                                 className="danger-option"
@@ -271,8 +269,8 @@ const PostItem = (props) => {
             {/* Below */}
             <div className="post__below-container">
                 {/* Interaction */}
-                <div className="post__row interaction-row">
-                    <div className="post__row interaction-group">
+                <div className="row interaction-row">
+                    <div className="row interaction-group">
                         <div className="action__icon" onClick={handleLikePost}>
                             {likeStatus ? (
                                 <i className="bx bxs-heart"></i>
@@ -302,7 +300,7 @@ const PostItem = (props) => {
                     </div>
                 </div>
                 {/* Like details */}
-                <div className="post__row">
+                <div className="row">
                     {likeStatus ? (
                         likeList.length > 1 ? (
                             <p className="like-details">
@@ -383,11 +381,8 @@ const PostItem = (props) => {
                 {cmtRenderList.length > 0 ? (
                     <div className="post__comment-list">
                         {cmtRenderList.map((comment) => (
-                            <div
-                                className="post__comment post__row"
-                                key={comment.id}
-                            >
-                                <div className="content post__row">
+                            <div className="post__comment row" key={comment.id}>
+                                <div className="content row">
                                     <p className="user__name">
                                         {comment.data.userName}
                                     </p>
@@ -408,7 +403,7 @@ const PostItem = (props) => {
                     {moment(postData.dateCreated.toDate()).fromNow()}
                 </div>
             </div>
-            <div className="post__row post__footer">
+            <div className="row post__footer">
                 <div className="action__icon">
                     <i className="bx bx-wink-smile"></i>
                 </div>
