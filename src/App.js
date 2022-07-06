@@ -13,7 +13,13 @@ import {
 import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { Box, Modal, LinearProgress } from '@mui/material';
-import { useDropzone } from 'react-dropzone';
+import Dropzone from 'react-dropzone';
+// import { Carousel } from 'react-carousel-minimal';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper';
 
 const modalStyle = {
     position: 'absolute',
@@ -79,7 +85,7 @@ const uploadModalStyle = {
         bgcolor: '#efefef',
         p: '10px 16px',
         display: 'block',
-        width: '320px',
+        width: '100%',
         outline: 0,
     },
     button: {
@@ -109,9 +115,8 @@ function App() {
     const [user, setUser] = useState(null);
     const [progress, setProgress] = useState(0);
     const [caption, setCaption] = useState('');
-    const [image, setImage] = useState(null);
-    const [imageUrl, setImageUrl] = useState('');
-    const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+    const [images, setImages] = useState([]);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         getData();
@@ -197,66 +202,57 @@ function App() {
         getData();
     };
 
-    const handleUpload = () => {
-        const storageRef = ref(storage, 'images/' + image.name);
-        const uploadTask = uploadBytesResumable(storageRef, image);
+    const handleUpload = async () => {
+        console.log(images);
+        let mediaUrls = [];
 
-        uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-                const progress = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
-                setProgress(progress);
-            },
-            (error) => {
-                alert(error.message);
-            },
-            () => {
-                //handle when complete
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    // console.log(downloadURL);
-                    try {
-                        const docRef = addDoc(collection(db, 'Posts'), {
-                            mediaUrl: downloadURL,
-                            userName: username,
-                            dateCreated: new Date(),
-                            caption: caption,
-                        });
-                        // console.log('Document written with ID: ', docRef.id);
-                    } catch (e) {
-                        console.error('Error adding document: ', e);
-                    }
-                    setImageUrl('');
-                    setImage(null);
+        const getMediaDownloadUrl = async (ref) => {
+            return new Promise((resolve) => {
+                getDownloadURL(ref).then((downloadURL) => resolve(downloadURL));
+            });
+        };
+
+        const getImagePromises = images.map(async (image, i) => {
+            const storageRef = ref(storage, 'images/' + image.name);
+            const uploadTask = uploadBytesResumable(storageRef, image);
+            mediaUrls[i] = await getMediaDownloadUrl(uploadTask.snapshot.ref);
+        });
+
+        Promise.all(getImagePromises).then(() => {
+            try {
+                addDoc(collection(db, 'Posts'), {
+                    mediaUrls: mediaUrls,
+                    userName: username,
+                    dateCreated: new Date(),
+                    caption: caption,
+                }).then((e) => {
+                    // console.log(e);
+                    setImages([]);
                     setProgress(0);
                     setCaption('');
                     setOpenModalUpload(false);
                     getData();
                 });
+            } catch (e) {
+                console.error('Error adding document: ', e);
             }
-        );
+        });
     };
 
     useEffect(() => {
-        if (!image) {
-            setImageUrl(undefined);
+        if (images.length === 0) {
             return;
         }
+        // console.log(images);
+        const imagesUrl = images.map((image) => URL.createObjectURL(image));
+        setData(imagesUrl);
+        // setData(imagesUrl.reduce((prev, cur) => [...prev, { image: cur }], []));
+        return () => imagesUrl.map((e) => URL.revokeObjectURL(e));
+    }, [images]);
 
-        const objectUrl = URL.createObjectURL(image);
-        setImageUrl(objectUrl);
-
-        // free memory when ever this component is unmounted
-        return () => URL.revokeObjectURL(objectUrl);
-    }, [image]);
-
-    const files = acceptedFiles.map((file) => (
-        <li key={file.path}>
-            {file.path} - {file.size} bytes
-        </li>
-    ));
-    console.log(files);
+    const handleDeletePost = (postId) => {
+        setPosts((posts) => posts.filter((post) => post.id !== postId));
+    };
 
     return (
         <div className="App">
@@ -280,6 +276,7 @@ function App() {
                             data={post}
                             username={username}
                             commentOnClick={handleComment}
+                            handleDeletePost={handleDeletePost}
                         />
                     ))}
             </div>
@@ -353,17 +350,37 @@ function App() {
                 open={openModalUpload}
                 onClose={() => {
                     setOpenModalUpload(false);
-                    setImage(null);
-                    setImageUrl('');
+                    setImages([]);
                     setProgress(0);
                 }}
             >
                 <Box sx={uploadModalStyle}>
                     <h2 className="modalLable"> Create new post</h2>
-                    {image ? (
+                    {images.length ? (
                         <div className="upload-container">
                             <div className="upload__img">
-                                <img src={imageUrl} alt={image} />
+                                {/* <Carousel
+                                    data={data}
+                                    dots={true}
+                                    width="600px"
+                                    height="600px"
+                                    showNavBtn={images.length > 1}
+                                /> */}
+                                <Swiper
+                                    navigation={true}
+                                    pagination={{ clickable: true }}
+                                    modules={[Pagination, Navigation]}
+                                    className="mySwiper"
+                                >
+                                    {data.map((img, i) => (
+                                        <SwiperSlide
+                                            className="slideImage"
+                                            key={i}
+                                        >
+                                            <img src={img} alt="images" />
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
                             </div>
                             <div className="upload__caption-submit">
                                 <LinearProgress
@@ -372,6 +389,7 @@ function App() {
                                     className="upload__progress-bar"
                                 />
                                 <textarea
+                                    maxLength="500"
                                     type="text"
                                     placeholder="Caption"
                                     onChange={(e) => setCaption(e.target.value)}
@@ -385,29 +403,43 @@ function App() {
                                 <button
                                     className="btn"
                                     onClick={() => {
-                                        setImage(null);
-                                        setImageUrl('');
+                                        setImages([]);
                                         setProgress(0);
                                     }}
                                 >
                                     Discard
                                 </button>
+                                <Dropzone
+                                    onDrop={(e) =>
+                                        setImages((arr) => [...arr, e[0]])
+                                    }
+                                >
+                                    {({ getRootProps, getInputProps }) => (
+                                        <div
+                                            {...getRootProps()}
+                                            className="dropzone optional"
+                                        >
+                                            <input {...getInputProps()} />
+                                            <p>Add more ...</p>
+                                            <i className="bx bxs-cloud-upload"></i>
+                                        </div>
+                                    )}
+                                </Dropzone>
                             </div>
                         </div>
                     ) : (
-                        /* <input
-                            type="file"
-                            placeholder="Drop file here"
-                            // onChange={handleUpload}
-                            onChange={(e) => setImage(e.target.files[0])}
-                        /> */
-                        <div {...getRootProps({ className: 'dropzone' })}>
-                            <input {...getInputProps()} />
-                            <p>
-                                Drag 'n' drop some files here, or click to
-                                select files
-                            </p>
-                        </div>
+                        <Dropzone onDrop={(e) => setImages(e)}>
+                            {({ getRootProps, getInputProps }) => (
+                                <div {...getRootProps()} className="dropzone">
+                                    <input {...getInputProps()} />
+                                    <p>
+                                        Drag 'n' drop some files here, or click
+                                        to select files
+                                    </p>
+                                    <i className="bx bxs-cloud-upload"></i>
+                                </div>
+                            )}
+                        </Dropzone>
                     )}
                 </Box>
             </Modal>

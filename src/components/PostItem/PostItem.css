@@ -44,6 +44,7 @@
 
 .post__media .main-media {
     width: 470px;
+    user-select: none;
 }
 .user .user__ava {
     width: 32px;
@@ -121,7 +122,9 @@
 }
 .post__user-caption {
     font-size: 14px;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    /* max-height: 32px;
+    overflow: hidden; */
 }
 
 .like-details {
@@ -186,7 +189,7 @@
 }
 
 .view-all-cmt {
-    margin-top: 9px;
+    margin-top: 3px;
 }
 
 .post__comment-list {
@@ -223,3 +226,11 @@
 }
 
 /* animate__pulse */
+
+/* .slideImage img {
+    width: 468px;
+} */
+
+.danger-option {
+    color: red !important;
+}

@@ -81,8 +81,9 @@ body {
     background-color: #efefef;
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 600px;
-    height: 600px;
+    /* height: 600px; */
     overflow: hidden;
     border-radius: 8px;
     margin-right: 48px;
@@ -109,4 +110,68 @@ button:disabled {
     height: calc(100vh - 64px);
     overflow-y: scroll;
     padding-bottom: 16px;
+}
+.dropzone {
+    border: 3px dashed #999;
+    height: 300px;
+    width: 500px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    padding: 0 128px;
+    padding-top: 190px;
+    padding-bottom: 100px;
+    text-align: center;
+    position: relative;
+    color: #999;
+    user-select: none;
+}
+
+.dropzone.optional {
+    flex: 1;
+    width: 352px;
+    height: 308px;
+    margin-top: 16px;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.dropzone .bxs-cloud-upload {
+    position: absolute;
+    font-size: 120px;
+    color: #999;
+    top: 50px;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 12px !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+    color: white !important;
+    background-color: rgba(0, 0, 0, 0.925);
+    border-radius: 50%;
+    padding: 0px 8px;
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: white !important;
+    box-shadow: #222 0px 0px 10px;
+}
+.slideImage img {
+    max-width: 100%;
+}
+
+.swiper-wrapper {
+    align-items: center;
+}
+.slideImage {
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }

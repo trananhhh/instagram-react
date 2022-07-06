@@ -12,8 +12,17 @@ import {
     deleteDoc,
     doc,
 } from 'firebase/firestore';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Fade from '@mui/material/Fade';
 
 const PostItem = (props) => {
+    // console.log(props.postId);
     const postData = props.data;
 
     const [commentList, setCommentList] = useState([]);
@@ -25,7 +34,25 @@ const PostItem = (props) => {
     const [cmtRenderList, setCmtRenderList] = useState([]);
     const [viewAllCmts, setViewAllCmts] = useState(false);
     const [heartAnimation, setHeartAnimation] = useState(false);
+    const [showMoreCapsBtn, setShowMoreCapsBtn] = useState(true);
+    const [renderCaption, setRenderCaption] = useState('');
     const cmtRef = useRef(null);
+
+    useEffect(() => {
+        if (postData.caption && postData.caption.length > 100) {
+            setShowMoreCapsBtn(true);
+            console.log(postData.caption);
+            setRenderCaption(postData.caption.substring(0, 100));
+        } else {
+            setShowMoreCapsBtn(false);
+            setRenderCaption(postData.caption);
+        }
+    }, []);
+
+    const handleShowMoreCaps = () => {
+        setShowMoreCapsBtn(false);
+        setRenderCaption(postData.caption);
+    };
 
     const getComments = async (postId) => {
         const cmtCol = collection(db, `Posts/${postId}/comments`);
@@ -92,7 +119,7 @@ const PostItem = (props) => {
                 });
             else {
                 const likeRef = likeList.find(
-                    (e) => e.data.userName == props.username
+                    (e) => e.data.userName === props.username
                 ).id;
                 console.log(likeRef);
                 deleteDoc(doc(db, `Posts/${props.postId}/likes`, likeRef));
@@ -133,6 +160,24 @@ const PostItem = (props) => {
         return () => clearTimeout(func);
     }, [heartAnimation]);
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleDeletePost = async () => {
+        if (window.confirm('Are you sure to delete this post?')) {
+            await deleteDoc(doc(db, 'Posts', props.postId));
+            props.handleDeletePost(props.postId);
+        } else {
+            handleClose();
+        }
+    };
+
     return (
         <div className="post__container">
             {/* Header */}
@@ -146,7 +191,31 @@ const PostItem = (props) => {
                     <p className="user__name">{postData.userName}</p>
                 </div>
                 <div className="post__header-options action__icon">
-                    <i className="bx bx-dots-horizontal-rounded"></i>
+                    <i
+                        className="bx bx-dots-horizontal-rounded"
+                        onClick={handleClick}
+                    ></i>
+                    <Menu
+                        id="fade-menu"
+                        MenuListProps={{
+                            'aria-labelledby': 'fade-button',
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        // TransitionComponent={Fade}
+                    >
+                        {postData.userName == props.username ? (
+                            <MenuItem
+                                onClick={handleDeletePost}
+                                className="danger-option"
+                            >
+                                Delete
+                            </MenuItem>
+                        ) : (
+                            ''
+                        )}
+                    </Menu>
                 </div>
             </div>
             {/* Main post */}
@@ -158,7 +227,32 @@ const PostItem = (props) => {
                     setHeartAnimation(true);
                 }}
             >
-                <img alt="#" className="main-media" src={postData.mediaUrl} />
+                {postData.mediaUrl ? (
+                    <img
+                        alt="#"
+                        className="main-media"
+                        src={postData.mediaUrl}
+                    />
+                ) : postData.mediaUrls.length === 1 ? (
+                    <img
+                        alt="#"
+                        className="main-media"
+                        src={postData.mediaUrls[0]}
+                    />
+                ) : (
+                    <Swiper
+                        navigation={true}
+                        pagination={{ clickable: true }}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                    >
+                        {postData.mediaUrls.map((img, i) => (
+                            <SwiperSlide className="slideImage" key={i}>
+                                <img src={img} alt="images" />
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                )}
                 {heartAnimation ? (
                     <div className="main-heart">
                         <img
@@ -247,7 +341,18 @@ const PostItem = (props) => {
                 <div className="post__user-caption">
                     <p className="caption">
                         <span className="user__name">{postData.userName}</span>
-                        {postData.caption}
+                        {/* {postData.caption} */}
+                        {renderCaption}
+                        {showMoreCapsBtn ? (
+                            <button
+                                className="btn-trans"
+                                onClick={handleShowMoreCaps}
+                            >
+                                ... more
+                            </button>
+                        ) : (
+                            ''
+                        )}
                     </p>
                 </div>
                 {/* Comment details */}
