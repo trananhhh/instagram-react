@@ -85,6 +85,10 @@ const PostItem = (props) => {
     }, [props.postId]);
 
     const handleCommentPost = () => {
+        if (props.username === '' && !props.username) {
+            props.handleRequireLogin(true);
+            return;
+        }
         if (comment === '' || comment === undefined) return;
         try {
             addDoc(collection(db, `Posts/${props.postId}/comments`), {
@@ -104,10 +108,18 @@ const PostItem = (props) => {
     };
 
     const handleSavePost = () => {
+        if (props.username === '' && !props.username) {
+            props.handleRequireLogin(true);
+            return;
+        }
         setSaveStatus((s) => !s);
     };
 
     const handleLikePost = () => {
+        if (props.username === '' && !props.username) {
+            props.handleRequireLogin(true);
+            return;
+        }
         setLikeStatus((s) => !s);
         try {
             if (!likeStatus)
@@ -220,9 +232,13 @@ const PostItem = (props) => {
             <div
                 className="post__media"
                 onDoubleClick={() => {
-                    if (!likeStatus) handleLikePost();
-                    setLikeStatus(true);
-                    setHeartAnimation(true);
+                    if (props.username !== '' && props.username) {
+                        if (!likeStatus) handleLikePost();
+                        setLikeStatus(true);
+                        setHeartAnimation(true);
+                    } else {
+                        props.handleRequireLogin(true);
+                    }
                 }}
             >
                 {postData.mediaUrl ? (
@@ -273,7 +289,7 @@ const PostItem = (props) => {
                     <div className="row interaction-group">
                         <div className="action__icon" onClick={handleLikePost}>
                             {likeStatus ? (
-                                <i className="bx bxs-heart"></i>
+                                <i className="bx bxs-heart icon-animation"></i>
                             ) : (
                                 <i className="bx bx-heart"></i>
                             )}
@@ -292,7 +308,7 @@ const PostItem = (props) => {
                     <div className="save">
                         <div className="action__icon" onClick={handleSavePost}>
                             {saveStatus ? (
-                                <i className="bx bxs-bookmark"></i>
+                                <i className="bx bxs-bookmark icon-animation"></i>
                             ) : (
                                 <i className="bx bx-bookmark"></i>
                             )}

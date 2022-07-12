@@ -1,7 +1,13 @@
 import React from 'react';
 import PostItem from '../PostItem';
 
-const Home = ({ posts, username, handleComment, handleDeletePost }) => {
+const Home = ({
+    posts,
+    username,
+    handleComment,
+    handleDeletePost,
+    handleRequireLogin,
+}) => {
     return (
         <>
             {/* Post list */}
@@ -18,6 +24,7 @@ const Home = ({ posts, username, handleComment, handleDeletePost }) => {
                             username={username}
                             commentOnClick={handleComment}
                             handleDeletePost={handleDeletePost}
+                            handleRequireLogin={handleRequireLogin}
                         />
                     ))}
             </div>

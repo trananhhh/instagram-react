@@ -254,6 +254,10 @@ function App() {
         setPosts((posts) => posts.filter((post) => post.id !== postId));
     };
 
+    const handleRequireLogin = (state) => {
+        if (state) setOpenModalSignIn(true);
+    };
+
     return (
         <div className="App">
             <Router>
@@ -274,6 +278,7 @@ function App() {
                                 username={username}
                                 handleComment={handleComment}
                                 handleDeletePost={handleDeletePost}
+                                handleRequireLogin={handleRequireLogin}
                             />
                         }
                     />
@@ -319,6 +324,19 @@ function App() {
                     <button className="btn btn-primary" onClick={handleSignUp}>
                         Sign up
                     </button>
+
+                    <p className="secondary-text modal-text">
+                        Already have an account?
+                        <strong
+                            onClick={() => {
+                                setOpenModalSignUp(false);
+                                setOpenModalSignIn(true);
+                            }}
+                        >
+                            {' '}
+                            Sign in
+                        </strong>
+                    </p>
                 </Box>
             </Modal>
             {/* Sign-in modal */}
@@ -344,6 +362,19 @@ function App() {
                     <button className="btn btn-primary" onClick={handleSignIn}>
                         Sign in
                     </button>
+
+                    <p className="secondary-text modal-text">
+                        Not having an account yet?
+                        <strong
+                            onClick={() => {
+                                setOpenModalSignUp(true);
+                                setOpenModalSignIn(false);
+                            }}
+                        >
+                            {' '}
+                            Sign up
+                        </strong>
+                    </p>
                 </Box>
             </Modal>
             {/* Upload modal */}

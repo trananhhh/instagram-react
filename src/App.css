@@ -20,6 +20,19 @@ body {
 .App {
     overflow-x: hidden;
 }
+
+.grid {
+    display: grid;
+    gap: 8px;
+    /* display: flex;
+    width: 100%;
+    flex-wrap: wrap; */
+}
+
+.grid-items-3 {
+    /* width: 33%; */
+}
+
 .row {
     display: flex;
     align-items: center;

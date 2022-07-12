@@ -2,8 +2,6 @@
     /* font-size: 14px; */
 }
 
-
-
 .post__container {
     margin: auto;
     margin-top: 14px;
@@ -208,15 +206,16 @@
     }
 }
 
-.bxs-heart {
+.icon-animation {
     animation-name: heartBtn;
     animation-duration: 0.5s;
+}
+
+.bxs-heart {
     color: #ed4956;
 }
 
 .bxs-bookmark {
-    animation-name: heartBtn;
-    animation-duration: 0.5s;
     color: #ff942a;
 }
 
