@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import './Header.css';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Link, useNavigate } from 'react-router-dom';
 
 export const Header = (props) => {
+    const navigate = useNavigate();
+
     // const [openStatus, setOpenStatus] = useState(false);
 
     const handleSignUp = () => {
@@ -46,7 +48,10 @@ export const Header = (props) => {
         <div className="header-container">
             <div className="container">
                 <div className="header">
-                    <div className="header__logo">
+                    <div
+                        className="header__logo clickable"
+                        onClick={() => navigate('/')}
+                    >
                         <img
                             src="https://www.instagram.com/static/images/web/logged_out_wordmark-2x.png/d2529dbef8ed.png"
                             alt="Logo"

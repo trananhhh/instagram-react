@@ -21,6 +21,18 @@ body {
     overflow-x: hidden;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    opacity: 0.8;
+}
+
+.emoji-picker__wrapper {
+    z-index: 3;
+}
+
 .grid {
     display: grid;
     gap: 8px;
@@ -55,11 +67,16 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 .btn-primary {
     background-color: #0095f6;
     color: #fff;
-    transition: all 0.2s ease;
+}
+.btn-secondary {
+    border: 1px solid #dbdbdb;
+    color: #262626;
+    background-color: transparent;
 }
 .btn:hover {
     opacity: 0.8;
@@ -70,6 +87,9 @@ body {
     margin: 0;
     font-size: 12px;
     color: #666;
+}
+.secondary-text a {
+    display: inline;
 }
 
 .modal-text strong {
@@ -205,4 +225,34 @@ button:disabled {
     align-items: center;
     justify-content: center;
     display: flex;
+}
+
+.text-input-container button {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-weight: 600;
+    color: #0095f6;
+    /* color: #0095f6; */
+}
+.text-input-container {
+    justify-content: space-between;
+    min-height: 49px;
+    padding: 0 12px;
+}
+.text-input-container textarea {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-grow: 1;
+    font-size: inherit;
+    max-height: 80px;
+    outline: none;
+    padding: 0px 12px;
+    resize: none;
+    width: 0;
+    align-items: center;
+    height: 18px;
+    margin: 12px 0px;
 }

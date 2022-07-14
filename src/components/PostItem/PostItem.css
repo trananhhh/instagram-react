@@ -151,30 +151,7 @@
 
 .post__footer {
     border-top: 0.5px solid rgb(200, 200, 200);
-    justify-content: space-between;
-    height: 49px;
-    padding: 0 12px;
     margin-top: 12px;
-}
-
-.post__footer input {
-    padding: 4px 8px;
-    flex: 1;
-    margin: 0 8px;
-    outline: none;
-    border: none;
-    font-size: 14px;
-    font-weight: 400;
-    color: rgb(54, 54, 54);
-}
-
-.post__footer button {
-    outline: none;
-    border: none;
-    background-color: transparent;
-    font-weight: 600;
-    color: #0095f6;
-    /* color: #0095f6; */
 }
 
 .like-cmt {

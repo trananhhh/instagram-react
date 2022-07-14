@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
-import Home from './components/Home';
+import Home from './pages/Home';
+import Direct from './pages/Direct';
 import Header from './components/Header';
 import Profile from './components/Profile';
 import { auth, db, storage } from './firebaseConfig';
@@ -118,12 +119,15 @@ function App() {
     const [caption, setCaption] = useState('');
     const [images, setImages] = useState([]);
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getData();
     }, []);
 
     const getData = async () => {
+        setLoading((e) => true);
+        if (posts !== []) setPosts((e) => e.splice(0, 0));
         const postsCol = collection(db, 'Posts');
         const snapshot = await getDocs(postsCol);
         setPosts(
@@ -132,7 +136,7 @@ function App() {
                 post: doc.data(),
             }))
         );
-        // console.log(snapshot);
+        setLoading((e) => false);
     };
 
     const handleSignUpOnClick = (openStatus) => {
@@ -148,6 +152,7 @@ function App() {
             .then(() => {
                 setUser(null);
                 setUsername('');
+                getData();
             })
             .catch((err) => {
                 console.log(err);
@@ -192,6 +197,7 @@ function App() {
                     setUser(userCredential.user);
                     setUid(userCredential.user.uid);
                     setUsername(userCredential.user.username);
+                    getData();
                 })
                 .catch((error) => console.log(error));
         } catch (error) {
@@ -268,12 +274,12 @@ function App() {
                     uploadOnClick={handleUploadOnClick}
                     user={user}
                 />
-
                 <Routes>
                     <Route
                         path="/"
                         element={
                             <Home
+                                loading={loading}
                                 posts={posts}
                                 username={username}
                                 handleComment={handleComment}
@@ -282,7 +288,14 @@ function App() {
                             />
                         }
                     />
-                    <Route path="/:username" element={<Profile />} />
+                    <Route
+                        path="/:username"
+                        element={<Profile username={username} />}
+                    />
+                    <Route
+                        path="/direct"
+                        element={<Direct username={username} loggedIn={true} uid={uid} />}
+                    />
                 </Routes>
             </Router>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Avatar, AvatarGroup } from '@mui/material';
+import { Avatar } from '@mui/material';
 import 'animate.css';
 
 import './PostItem.css';
@@ -19,11 +19,21 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from 'react-router-dom';
+import { EmojiButton } from '@joeattardi/emoji-button';
 
 const PostItem = (props) => {
     // console.log(props.postId);
     const postData = props.data;
-
+    const navigate = useNavigate();
+    const picker = new EmojiButton({
+        position: 'bottom-end',
+        autoHide: false,
+        showPreview: false,
+        showSearch: false,
+        showCategoryButtons: false,
+    });
+    const trigger = document.querySelector(`.emoji-${props.postId}`);
     const [commentList, setCommentList] = useState([]);
 
     const [comment, setComment] = useState('');
@@ -37,6 +47,10 @@ const PostItem = (props) => {
     const [renderCaption, setRenderCaption] = useState('');
     const cmtRef = useRef(null);
 
+    picker.on('emoji', (selection) => {
+        setComment((e) => e + selection.emoji);
+    });
+
     useEffect(() => {
         if (postData.caption && postData.caption.length > 100) {
             setShowMoreCapsBtn(true);
@@ -45,7 +59,7 @@ const PostItem = (props) => {
             setShowMoreCapsBtn(false);
             setRenderCaption(postData.caption);
         }
-    }, []);
+    }, [postData.caption]);
 
     const handleShowMoreCaps = () => {
         setShowMoreCapsBtn(false);
@@ -82,7 +96,8 @@ const PostItem = (props) => {
     useEffect(() => {
         getComments(props.postId);
         getLikes(props.postId);
-    }, [props.postId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.postId, props.username]);
 
     const handleCommentPost = () => {
         if (props.username === '' && !props.username) {
@@ -145,10 +160,10 @@ const PostItem = (props) => {
         setCmtRenderList(
             commentList.length >= 2
                 ? commentList
-                      .sort((cmt1, cmt2) => {
-                          return cmt1.data.dateCreated - cmt2.data.dateCreated;
-                      })
-                      .slice(0, 2)
+                    .sort((cmt1, cmt2) => {
+                        return cmt1.data.dateCreated - cmt2.data.dateCreated;
+                    })
+                    .slice(0, 2)
                 : commentList.slice(0, 2)
         );
     }, [commentList]);
@@ -192,7 +207,10 @@ const PostItem = (props) => {
         <div className="post__container">
             {/* Header */}
             <div className="post__header row">
-                <div className="user row">
+                <div
+                    className="user row clickable"
+                    onClick={() => navigate('/' + postData.userName)}
+                >
                     <Avatar
                         className="user__ava"
                         alt={postData.userName}
@@ -202,7 +220,7 @@ const PostItem = (props) => {
                 </div>
                 <div className="post__header-options action__icon">
                     <i
-                        className="bx bx-dots-horizontal-rounded"
+                        className="bx bx-dots-horizontal-rounded clickable"
                         onClick={handleOpenOptions}
                     ></i>
                     <Menu
@@ -213,12 +231,12 @@ const PostItem = (props) => {
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
-                        // TransitionComponent={Fade}
+                    // TransitionComponent={Fade}
                     >
                         {postData.userName === props.username ? (
                             <MenuItem
                                 onClick={handleDeletePost}
-                                className="danger-option"
+                                className="danger-option clickable"
                             >
                                 Delete
                             </MenuItem>
@@ -287,7 +305,10 @@ const PostItem = (props) => {
                 {/* Interaction */}
                 <div className="row interaction-row">
                     <div className="row interaction-group">
-                        <div className="action__icon" onClick={handleLikePost}>
+                        <div
+                            className="action__icon clickable"
+                            onClick={handleLikePost}
+                        >
                             {likeStatus ? (
                                 <i className="bx bxs-heart icon-animation"></i>
                             ) : (
@@ -399,16 +420,23 @@ const PostItem = (props) => {
                         {cmtRenderList.map((comment) => (
                             <div className="post__comment row" key={comment.id}>
                                 <div className="content row">
-                                    <p className="user__name">
+                                    <p
+                                        className="user__name clickable"
+                                        onClick={() =>
+                                            navigate(
+                                                '/' + comment.data.userName
+                                            )
+                                        }
+                                    >
                                         {comment.data.userName}
                                     </p>
                                     <p className="caption">
                                         {comment.data.content}
                                     </p>
                                 </div>
-                                <div className="like-cmt">
+                                {/* <div className="like-cmt">
                                     <i className="bx bx-heart"></i>
-                                </div>
+                                </div> */}
                             </div>
                         ))}
                     </div>
@@ -419,24 +447,29 @@ const PostItem = (props) => {
                     {moment(postData.dateCreated.toDate()).fromNow()}
                 </div>
             </div>
-            <div className="row post__footer">
-                <div className="action__icon">
+            <div className="row post__footer text-input-container">
+                <div
+                    className={`action__icon emoji-${props.postId}`}
+                    onClick={() => picker.togglePicker(trigger)}
+                >
                     <i className="bx bx-wink-smile"></i>
                 </div>
-                <input
+                <textarea
                     ref={cmtRef}
-                    className="add-cmt"
                     value={comment}
-                    name="cmt"
                     placeholder="Add a comment..."
                     onKeyDown={handleEnter}
                     onChange={(e) => {
                         setComment(e.target.value);
+                        if (e.target.value.length <= 10)
+                            e.target.style.height = '18px';
+                        else
+                            e.target.style.height = (e.target.scrollHeight) + "px";
                     }}
                 />
                 <button
                     disabled={!comment}
-                    className="post-cmt-btn"
+                    className="send-btn"
                     onClick={handleCommentPost}
                 >
                     Post
